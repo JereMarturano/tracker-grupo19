@@ -20,9 +20,12 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font-sans); background-color: #121212; color: var(--color-text-primary); }
 .container { max-width: 760px; margin: 0 auto; padding: 2rem 1rem; }
-.header { margin-bottom: 1.5rem; }
-.header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
-.header p { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+.header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+.header-titles h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.header-titles p { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+.live-badge { font-size: 11px; font-weight: 600; color: #1D9E75; background: #133A2D; padding: 4px 10px; border-radius: 999px; display: flex; align-items: center; gap: 6px; }
+.live-badge::before { content: ''; display: block; width: 6px; height: 6px; background: #1D9E75; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0.4); } 70% { box-shadow: 0 0 0 4px rgba(29, 158, 117, 0); } 100% { box-shadow: 0 0 0 0 rgba(29, 158, 117, 0); } }
 .progress-bar-wrap { background: var(--color-background-secondary); border-radius: 999px; height: 6px; margin: 12px 0; overflow: hidden; }
 .progress-bar { height: 6px; border-radius: 999px; transition: width 0.4s ease; }
 .tabs { display: flex; gap: 8px; margin-bottom: 1.25rem; }
@@ -34,8 +37,8 @@ body { font-family: var(--font-sans); background-color: #121212; color: var(--co
 .entry:hover { border-color: var(--color-border-secondary); }
 .entry.done { opacity: 0.6; }
 .entry.done .entry-title { text-decoration: line-through; color: var(--color-text-tertiary); }
-.check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--color-border-secondary); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.check.checked { background: #1D9E75; border-color: #1D9E75; }
+.check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--color-border-secondary); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.check.checked { background: #1D9E75; border-color: #1D9E75; box-shadow: 0 0 10px rgba(29, 158, 117, 0.3); transform: scale(1.05); }
 .check.checked::after { content: ''; display: block; width: 5px; height: 9px; border: 1.5px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); }
 .entry-content { flex: 1; }
 .entry-title { font-size: 14px; color: var(--color-text-primary); }
@@ -56,8 +59,11 @@ body { font-family: var(--font-sans); background-color: #121212; color: var(--co
 <div class="container">
   <h2 class="sr-only">Tracker de entregas - Proyecto de Trabajo de Campo</h2>
   <div class="header">
-    <h2>Tracker de entregas</h2>
-    <p>Proyecto de Trabajo de Campo — seguimiento evolutivo</p>
+    <div class="header-titles">
+      <h2>Tracker de entregas</h2>
+      <p>Proyecto de Trabajo de Campo — seguimiento evolutivo</p>
+    </div>
+    <div class="live-badge">Sincronizado</div>
   </div>
 
   <div class="stats-row" id="stats-row"></div>
@@ -158,6 +164,7 @@ const data = {
 };
 
 const state = {};
+const localState = {}; // Estado visual que no se sincroniza
 let activeTab = 'c1';
 
 // Escuchar cambios en tiempo real desde Firebase
@@ -172,12 +179,13 @@ stateRef.on('value', (snapshot) => {
 });
 
 function saveState() {
-  // Enviar cambios a Firebase
+  // Limpiamos propiedades visuales por si acaso (aunque ahora usamos localState)
   stateRef.set(state).catch(err => console.error("Error guardando en Firebase:", err));
 }
 
 function initState(id) {
-  if (!state[id]) state[id] = { done: false, note: '', showNote: false };
+  if (!state[id]) state[id] = { done: false, note: '' };
+  if (!localState[id]) localState[id] = { showNote: false };
 }
 
 function getAllItems() {
@@ -226,7 +234,7 @@ function toggleDone(id) {
 
 function toggleNote(id) {
   initState(id);
-  state[id].showNote = !state[id].showNote;
+  localState[id].showNote = !localState[id].showNote;
   renderAll();
 }
 
@@ -255,8 +263,8 @@ function renderGroup(group) {
                 <span style="font-size:12px; color:var(--color-text-tertiary)">${item.day}</span>
               </div>
               <div style="font-size:12px; color:var(--color-text-secondary); margin-top:3px;">${item.desc}</div>
-              <button class="note-btn" onclick="event.stopPropagation(); toggleNote('${item.id}')">${s.showNote ? 'Cerrar nota' : (s.note ? 'Ver nota' : '+ Agregar nota')}</button>
-              ${s.showNote ? `<textarea class="note-input" rows="2" placeholder="Escribí tus notas acá..." onclick="event.stopPropagation()" oninput="updateNote('${item.id}', this.value)">${s.note}</textarea>` : ''}
+              <button class="note-btn" onclick="event.stopPropagation(); toggleNote('${item.id}')">${localState[item.id].showNote ? 'Cerrar nota' : (s.note ? 'Ver nota' : '+ Agregar nota')}</button>
+              ${localState[item.id].showNote ? `<textarea class="note-input" rows="2" placeholder="Escribí tus notas acá..." onclick="event.stopPropagation()" oninput="updateNote('${item.id}', this.value)">${s.note || ''}</textarea>` : ''}
             </div>
           </div>
         `;
