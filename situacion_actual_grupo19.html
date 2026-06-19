@@ -1,7 +1,25 @@
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-background-primary: #1e1e1e;
+  --color-background-secondary: #2d2d2d;
+  --color-background-tertiary: #3d3d3d;
+  --color-border-primary: #555;
+  --color-border-secondary: #444;
+  --color-border-tertiary: #333;
+  --color-text-primary: #f1f1f1;
+  --color-text-secondary: #a0a0a0;
+  --color-text-tertiary: #777;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+body { background-color: #121212; color: var(--color-text-primary); }
+.wrap{max-width: 760px; margin: 0 auto; padding: 2rem 1rem; font-family:var(--font-sans)}
 .section-lbl{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px}
 .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:10px}
 .card-row{display:flex;align-items:flex-start;gap:12px}
