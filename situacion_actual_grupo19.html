@@ -1,0 +1,161 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+.section-lbl{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:10px}
+.card-row{display:flex;align-items:flex-start;gap:12px}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-done{background:#1D9E75}
+.dot-next{background:#378ADD}
+.dot-pending{background:#B4B2A9}
+.dot-alert{background:#E24B4A}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.card-sub{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);margin-right:4px;margin-top:4px}
+.b-done{background:#E1F5EE;color:#085041}
+.b-next{background:#E6F1FB;color:#0C447C}
+.b-pending{background:#F1EFE8;color:#444441}
+.b-alert{background:#FCEBEB;color:#791F1F}
+.timeline{display:flex;gap:0;margin-bottom:1.5rem;border-radius:var(--border-radius-md);overflow:hidden}
+.tl-seg{flex:1;height:8px}
+.tl-done{background:#1D9E75}
+.tl-active{background:#378ADD}
+.tl-plan{background:#B5D4F4}
+.tl-future{background:#F1EFE8}
+.tl-legend{display:flex;gap:16px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tl-leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-secondary)}
+.tl-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.stat-v{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.stat-l{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.alert-box{background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start}
+.alert-icon{color:#A32D2D;font-size:18px;flex-shrink:0;margin-top:1px}
+.alert-txt{font-size:13px;color:#791F1F}
+.info-box{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start}
+.info-icon{color:#185FA5;font-size:18px;flex-shrink:0;margin-top:1px}
+.info-txt{font-size:13px;color:#0C447C}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.25rem 0}
+.member-row{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.member{display:flex;align-items:center;gap:8px;padding:8px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);flex:1;min-width:160px}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.av-a{background:#E1F5EE;color:#085041}
+.av-j{background:#E6F1FB;color:#0C447C}
+.av-o{background:#EEEDFE;color:#3C3489}
+.member-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.member-role{font-size:11px;color:var(--color-text-secondary)}
+</style>
+
+<div class="wrap">
+<h2 class="sr-only">Diagnóstico de situación actual — Grupo 19, Práctica Profesional UNC</h2>
+
+<div class="section-lbl">Grupo 19 — Práctica Profesional AUSI · UNC</div>
+
+<div class="member-row">
+  <div class="member"><div class="avatar av-a">AL</div><div><div class="member-name">Ariel Luna Arri</div><div class="member-role">Exp. proyectos reales</div></div></div>
+  <div class="member"><div class="avatar av-j">JM</div><div><div class="member-name">Jeremías Marturano</div><div class="member-role">Gestión y liderazgo</div></div></div>
+  <div class="member"><div class="avatar av-o">JO</div><div><div class="member-name">Jordan Monier</div><div class="member-role">Visión funcional / UC</div></div></div>
+</div>
+
+<hr class="divider">
+
+<div class="section-lbl">Progreso en el cuatrimestre 1 (90 días)</div>
+
+<div class="timeline">
+  <div class="tl-seg tl-done" style="flex:2" title="Completado"></div>
+  <div class="tl-seg tl-active" style="flex:0.5" title="Semana actual"></div>
+  <div class="tl-seg tl-plan" style="flex:3" title="Plan de mitigación activo"></div>
+  <div class="tl-seg tl-future" style="flex:4.5" title="Pendiente"></div>
+</div>
+<div class="tl-legend">
+  <div class="tl-leg-item"><div class="tl-leg-dot" style="background:#1D9E75"></div>Completado</div>
+  <div class="tl-leg-item"><div class="tl-leg-dot" style="background:#378ADD"></div>Semana actual (S1 plan)</div>
+  <div class="tl-leg-item"><div class="tl-leg-dot" style="background:#B5D4F4"></div>Plan mitigación (S2–S10)</div>
+  <div class="tl-leg-item"><div class="tl-leg-dot" style="background:#F1EFE8"></div>Pendiente C1</div>
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="stat-v">3/13</div><div class="stat-l">Entregas completadas</div></div>
+  <div class="stat"><div class="stat-v">~Día 30</div><div class="stat-l">Posición estimada</div></div>
+  <div class="stat"><div class="stat-v">6.6</div><div class="stat-l">Promedio FODA grupal</div></div>
+</div>
+
+<hr class="divider">
+
+<div class="section-lbl">Qué tienen listo</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-done"></div>
+  <div><div class="card-title">Acta de acuerdos de equipo</div>
+  <div class="card-sub">Régimen de reuniones, herramientas (Notion, Drive, Discord), roles rotativos, protocolo de conflictos. Completado.</div>
+  <span class="badge b-done">Entregado</span></div></div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-done"></div>
+  <div><div class="card-title">FODA Grupal v1.0</div>
+  <div class="card-sub">5 categorías evaluadas, 41 atributos. Diagnóstico con fortalezas y debilidades identificadas. Conclusión estratégica incluida.</div>
+  <span class="badge b-done">Entrega 00 cubierta</span></div></div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-done"></div>
+  <div><div class="card-title">Plan de mitigación + Cronograma de 10 semanas</div>
+  <div class="card-sub">Gantt definido. Semana 1 (15–21 Jun) activa ahora: Estimación de Complejidad con Story Points y Planning Poker.</div>
+  <span class="badge b-done">Completado</span><span class="badge b-next">S1 en curso</span></div></div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-done"></div>
+  <div><div class="card-title">Glosario técnico unificado</div>
+  <div class="card-sub">4 secciones: Ingeniería de software, QA/Testing, DevOps e Infraestructura, Gestión Ágil. Base conceptual compartida establecida.</div>
+  <span class="badge b-done">Completado</span></div></div>
+</div>
+
+<hr class="divider">
+
+<div class="section-lbl">Lo que viene — próximas acciones obligatorias</div>
+
+<div class="info-box">
+  <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
+  <div class="info-txt">Hoy es semana 1 del plan de mitigación (15–21 Jun). El foco es aprender Story Points y Planning Poker. La semana que viene arranca Testing con xUnit.</div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-next"></div>
+  <div><div class="card-title">Entrega 000 — Grupos</div>
+  <div class="card-sub">Formalizar la conformación del grupo ante la cátedra. Ya tienen el Acta firmada, usarla como respaldo.</div>
+  <span class="badge b-next">Día ~30–50 · Urgente</span></div></div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-next"></div>
+  <div><div class="card-title">Búsqueda y postulación de casos (Entrega 0)</div>
+  <div class="card-sub">Identificar al menos 3 casos reales candidatos. Definir Marco Metodológico y Análisis de Recursos para cada uno.</div>
+  <span class="badge b-next">Día 50–60 · Próximo hito</span></div></div>
+</div>
+
+<div class="card">
+  <div class="card-row"><div class="status-dot dot-pending"></div>
+  <div><div class="card-title">Selección de caso + Inicio de trabajo de campo</div>
+  <div class="card-sub">Elegir el caso definitivo (Día 65) y arrancar la investigación de campo (Día 70). Después vienen Entrega 1 y Entrega 2.</div>
+  <span class="badge b-pending">Día 65–70 · Pendiente</span></div></div>
+</div>
+
+<hr class="divider">
+
+<div class="section-lbl">Alertas del FODA a tener en mente</div>
+
+<div class="alert-box">
+  <i class="ti ti-alert-triangle alert-icon" aria-hidden="true"></i>
+  <div class="alert-txt">Testing Automatizado (2.67) y Optimización de Rendimiento (2.00) son las brechas más críticas. El plan de mitigación las ataca, pero hay que ejecutarlo sin saltear semanas.</div>
+</div>
+
+<div class="alert-box">
+  <i class="ti ti-alert-triangle alert-icon" aria-hidden="true"></i>
+  <div class="alert-txt">Estimación de Complejidad Técnica (4.67): riesgo real de mala planificación en el trabajo de campo. Esta semana es clave para sentar la base con Planning Poker.</div>
+</div>
+
+<button onclick="sendPrompt('¿Qué tipo de casos podríamos postular para el trabajo de campo dado nuestro perfil técnico del FODA?')" style="margin-top:4px;font-size:13px;padding:8px 14px;border-radius:var(--border-radius-md)">Ayudame a pensar casos para postular ↗</button>
+</div>

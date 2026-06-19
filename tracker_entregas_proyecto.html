@@ -1,0 +1,275 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.container { padding: 1.5rem 0; }
+.header { margin-bottom: 1.5rem; }
+.header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.header p { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+.progress-bar-wrap { background: var(--color-background-secondary); border-radius: 999px; height: 6px; margin: 12px 0; overflow: hidden; }
+.progress-bar { height: 6px; border-radius: 999px; transition: width 0.4s ease; }
+.tabs { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+.tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 14px; cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s; }
+.tab.active { background: var(--color-background-tertiary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+.section-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.group-block { margin-bottom: 1.5rem; }
+.entry { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; }
+.entry:hover { border-color: var(--color-border-secondary); }
+.entry.done { opacity: 0.6; }
+.entry.done .entry-title { text-decoration: line-through; color: var(--color-text-tertiary); }
+.check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--color-border-secondary); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.check.checked { background: #1D9E75; border-color: #1D9E75; }
+.check.checked::after { content: ''; display: block; width: 5px; height: 9px; border: 1.5px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); }
+.entry-content { flex: 1; }
+.entry-title { font-size: 14px; color: var(--color-text-primary); }
+.entry-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); margin-right: 4px; }
+.badge-day { background: #E6F1FB; color: #0C447C; }
+.badge-entrega { background: #EAF3DE; color: #27500A; }
+.badge-hito { background: #FAEEDA; color: #633806; }
+.note-btn { font-size: 12px; color: var(--color-text-tertiary); background: none; border: none; cursor: pointer; padding: 2px 0; text-decoration: underline; display: block; margin-top: 4px; }
+.note-input { width: 100%; margin-top: 6px; font-size: 13px; padding: 6px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); resize: none; font-family: var(--font-sans); }
+.stats-row { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+.stat-card { flex: 1; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
+.stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.stat-lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.empty-note { font-size: 13px; color: var(--color-text-tertiary); padding: 24px; text-align: center; }
+</style>
+
+<div class="container">
+  <h2 class="sr-only">Tracker de entregas - Proyecto de Trabajo de Campo</h2>
+  <div class="header">
+    <h2>Tracker de entregas</h2>
+    <p>Proyecto de Trabajo de Campo — seguimiento evolutivo</p>
+  </div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('c1')">Cuatrimestre 1</button>
+    <button class="tab" onclick="switchTab('c2')">Cuatrimestre 2</button>
+  </div>
+
+  <div id="tab-c1"></div>
+  <div id="tab-c2" style="display:none"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyB4fW3dXi8DbNYeu2PUAF6KXy4iZ6fbfRY",
+  authDomain: "tracker-grupo19.firebaseapp.com",
+  databaseURL: "https://tracker-grupo19-default-rtdb.firebaseio.com",
+  projectId: "tracker-grupo19",
+  storageBucket: "tracker-grupo19.firebasestorage.app",
+  messagingSenderId: "40338399026",
+  appId: "1:40338399026:web:9b87e2653c5bc74191412b",
+  measurementId: "G-J4R98HK9PY"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const stateRef = database.ref('tracker-state');
+
+const data = {
+  c1: {
+    label: "Cuatrimestre 1 — 90 días",
+    groups: [
+      {
+        name: "Fase individual y formación de grupos",
+        items: [
+          { id: "foda-ind", title: "FODA Individual", type: "hito", day: "Día 30–40", desc: "Análisis personal de fortalezas, oportunidades, debilidades y amenazas." },
+          { id: "arm-grupos", title: "Armado de grupos", type: "hito", day: "Día 30–50", desc: "Grupos de 3 alumnos. Definir integrantes." },
+          { id: "e000", title: "Entrega 000 — Grupos", type: "entrega", day: "Día ~50", desc: "Presentar composición del grupo." },
+        ]
+      },
+      {
+        name: "FODA y búsqueda de casos",
+        items: [
+          { id: "foda-gru", title: "FODA Grupal", type: "hito", day: "Día 55", desc: "Análisis grupal consolidado." },
+          { id: "e00", title: "Entrega 00 — FODA Grupal", type: "entrega", day: "Día 55", desc: "Documento de FODA grupal." },
+          { id: "busq", title: "Búsqueda de casos", type: "hito", day: "Día 50–60", desc: "Investigar y relevar posibles casos a abordar." },
+        ]
+      },
+      {
+        name: "Selección y marco inicial",
+        items: [
+          { id: "post", title: "Postulación de casos", type: "hito", day: "Día 60", desc: "Al menos 3 casos postulados." },
+          { id: "marco", title: "Definición Marco Metodológico", type: "hito", day: "Día 60", desc: "Definir el enfoque metodológico del proyecto." },
+          { id: "recursos", title: "Análisis de recursos", type: "hito", day: "Día 60", desc: "Inventario y evaluación de recursos disponibles." },
+          { id: "e0", title: "Entrega 0 — Casos + Marco + Recursos", type: "entrega", day: "Día 60", desc: "Documento integrador: postulación de casos, marco metodológico y análisis de recursos." },
+          { id: "sel", title: "Selección de caso", type: "hito", day: "Día 65", desc: "Definir el caso de trabajo de campo final." },
+          { id: "campo", title: "Inicio de trabajo de campo", type: "hito", day: "Día 70", desc: "Arranque formal de la investigación de campo." },
+        ]
+      },
+      {
+        name: "Entregas finales del cuatrimestre",
+        items: [
+          { id: "e1", title: "Entrega 1 — Pre-Planeamiento General", type: "entrega", day: "~Fin C1", desc: "Documento de pre-planeamiento general del proyecto." },
+          { id: "e2", title: "Entrega 2 — Mandato de Proyecto", type: "entrega", day: "~Fin C1", desc: "Mandato formal del proyecto definido y validado." },
+        ]
+      }
+    ]
+  },
+  c2: {
+    label: "Cuatrimestre 2 — 70 días (17 ago – 28 oct)",
+    groups: [
+      {
+        name: "Entregas de evolución (3–10)",
+        items: [
+          { id: "e3", title: "Entrega 3 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e4", title: "Entrega 4 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e5", title: "Entrega 5 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e6", title: "Entrega 6 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e7", title: "Entrega 7 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e8", title: "Entrega 8 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e9", title: "Entrega 9 — Evolución", type: "entrega", day: "C2", desc: "Avance evolutivo del proyecto." },
+          { id: "e10", title: "Entrega 10 — Evolución (regularidad)", type: "entrega", day: "C2 – Fin", desc: "Última entrega evolutiva. Define la regularidad." },
+        ]
+      },
+      {
+        name: "Instancias finales",
+        items: [
+          { id: "def-catedra", title: "Presentación ante cátedra", type: "hito", day: "Fin C2", desc: "Evaluación evolutiva: comprobación del producto final, foco en metodología y desarrollo de software." },
+          { id: "def-tribunal", title: "Exposición ante tribunal", type: "hito", day: "Final", desc: "45–75 min. Presentar el caso, desafíos metodológicos, tecnológicos y organizacionales." },
+        ]
+      }
+    ]
+  }
+};
+
+const state = {};
+let activeTab = 'c1';
+
+// Escuchar cambios en tiempo real desde Firebase
+stateRef.on('value', (snapshot) => {
+  const serverState = snapshot.val();
+  if (serverState) {
+    // Actualizar estado local con lo que viene del servidor
+    for (let key in state) delete state[key];
+    Object.assign(state, serverState);
+  }
+  renderAll(); // Re-renderizar la UI cuando el estado cambia
+});
+
+function saveState() {
+  // Enviar cambios a Firebase
+  stateRef.set(state).catch(err => console.error("Error guardando en Firebase:", err));
+}
+
+function initState(id) {
+  if (!state[id]) state[id] = { done: false, note: '', showNote: false };
+}
+
+function getAllItems() {
+  return [...data.c1.groups, ...data.c2.groups].flatMap(g => g.items);
+}
+
+function countDone(cuatKey) {
+  const items = data[cuatKey].groups.flatMap(g => g.items);
+  return items.filter(i => state[i.id]?.done).length;
+}
+
+function renderStats() {
+  const allItems = getAllItems();
+  const totalDone = allItems.filter(i => state[i.id]?.done).length;
+  const total = allItems.length;
+  const c1Items = data.c1.groups.flatMap(g => g.items);
+  const c2Items = data.c2.groups.flatMap(g => g.items);
+  const c1Done = c1Items.filter(i => state[i.id]?.done).length;
+  const c2Done = c2Items.filter(i => state[i.id]?.done).length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-val">${totalDone}/${total}</div>
+      <div class="stat-lbl">Ítems completados</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${Math.round(totalDone/total*100)}%;background:#1D9E75;"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${c1Done}/${c1Items.length}</div>
+      <div class="stat-lbl">Cuatrimestre 1</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${Math.round(c1Done/c1Items.length*100)}%;background:#378ADD;"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${c2Done}/${c2Items.length}</div>
+      <div class="stat-lbl">Cuatrimestre 2</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${Math.round(c2Done/c2Items.length*100)}%;background:#7F77DD;"></div></div>
+    </div>
+  `;
+}
+
+function toggleDone(id) {
+  initState(id);
+  state[id].done = !state[id].done;
+  saveState();
+  renderAll();
+}
+
+function toggleNote(id) {
+  initState(id);
+  state[id].showNote = !state[id].showNote;
+  renderAll();
+}
+
+function updateNote(id, val) {
+  initState(id);
+  state[id].note = val;
+  saveState();
+}
+
+function renderGroup(group) {
+  return `
+    <div class="group-block">
+      <div class="section-label">${group.name}</div>
+      ${group.items.map(item => {
+        initState(item.id);
+        const s = state[item.id];
+        const badgeClass = item.type === 'entrega' ? 'badge-entrega' : 'badge-hito';
+        const badgeLabel = item.type === 'entrega' ? 'Entrega' : 'Hito';
+        return `
+          <div class="entry ${s.done ? 'done' : ''}" onclick="toggleDone('${item.id}')">
+            <div class="check ${s.done ? 'checked' : ''}"></div>
+            <div class="entry-content">
+              <div class="entry-title">${item.title}</div>
+              <div class="entry-meta">
+                <span class="badge ${badgeClass}">${badgeLabel}</span>
+                <span style="font-size:12px; color:var(--color-text-tertiary)">${item.day}</span>
+              </div>
+              <div style="font-size:12px; color:var(--color-text-secondary); margin-top:3px;">${item.desc}</div>
+              <button class="note-btn" onclick="event.stopPropagation(); toggleNote('${item.id}')">${s.showNote ? 'Cerrar nota' : (s.note ? 'Ver nota' : '+ Agregar nota')}</button>
+              ${s.showNote ? `<textarea class="note-input" rows="2" placeholder="Escribí tus notas acá..." onclick="event.stopPropagation()" oninput="updateNote('${item.id}', this.value)">${s.note}</textarea>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderTab(key) {
+  const d = data[key];
+  return `
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem;">${d.label}</div>
+    ${d.groups.map(renderGroup).join('')}
+  `;
+}
+
+function switchTab(key) {
+  activeTab = key;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-c1').style.display = key === 'c1' ? '' : 'none';
+  document.getElementById('tab-c2').style.display = key === 'c2' ? '' : 'none';
+}
+
+function renderAll() {
+  renderStats();
+  document.getElementById('tab-c1').innerHTML = renderTab('c1');
+  document.getElementById('tab-c2').innerHTML = renderTab('c2');
+}
+
+// Eliminamos loadState(); porque Firebase maneja la carga inicial mediante on('value')
+renderAll();
+</script>
